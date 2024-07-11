@@ -1,4 +1,4 @@
-name: allurectl-path
+name: Allure Report Workflow
 
 on:
   workflow_dispatch:
@@ -18,22 +18,47 @@ env:
   ALLURE_RESULTS: "build/allure-results"
   ALLURE_JOB_RUN_ID: ${{ github.event.inputs.ALLURE_JOB_RUN_ID }}
 
-
 jobs:
   all-tests:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
-      - name: install and configure allurectl
-        uses: allure-framework/setup-allurectl@v1
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
         with:
-          allure-endpoint: https://testing.testops.cloud
-          allure-token: ${{ secrets.ALLURE_TOKEN }}
-          allure-project-id: ${{ secrets.ALLURE_PROJECT_ID }}
+          python-version: '3.x'
+
+      - name: Install Python dependencies
+        run: |
+          pip install pytest allure-pytest
+
       - name: Run pytest tests
         run: |
-          which allurectl
+          pytest --alluredir=${{ env.ALLURE_RESULTS }}
+
+      - name: Install and configure allurectl
+        uses: allure-framework/setup-allurectl@v1
+        with:
+          allure-endpoint: ${{ env.ALLURE_ENDPOINT }}
+          allurectl-version: latest
         env:
-          ALLURE_TESTPLAN_PATH: "./testplan.json"
-          ALLURE_RESULTS: "allure-results"
-          ALLURE_JOB_RUN_ID: ${{ github.event.inputs.ALLURE_JOB_RUN_ID }}          
+          ALLURE_TOKEN: ${{ secrets.ALLURE_TOKEN }}
+          ALLURE_PROJECT_ID: ${{ secrets.ALLURE_PROJECT_ID }}
+          ALLURE_JOB_RUN_ID: ${{ github.event.inputs.ALLURE_JOB_RUN_ID }}
+
+      - name: Upload Allure Results
+        run: |
+          allurectl upload --results ${ALLURE_RESULTS} --testplan ${ALLURE_TESTPLAN_PATH} --project ${ALLURE_PROJECT_ID} --endpoint ${ALLURE_ENDPOINT}
+        env:
+          ALLURE_TOKEN: ${{ secrets.ALLURE_TOKEN }}
+          ALLURE_PROJECT_ID: ${{ secrets.ALLURE_PROJECT_ID }}
+          ALLURE_JOB_RUN_ID: ${{ github.event.inputs.ALLURE_JOB_RUN_ID }}
+
