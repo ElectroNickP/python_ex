@@ -26,19 +26,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y unzip
-
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.x'
 
-      - name: Install Python dependencies
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=." >> $GITHUB_ENV
+
+      - name: Install dependencies
         run: |
-          pip install pytest allure-pytest
+          pip install -r requirements.txt
 
       - name: Run pytest tests
         run: |
@@ -61,4 +59,3 @@ jobs:
           ALLURE_TOKEN: ${{ secrets.ALLURE_TOKEN }}
           ALLURE_PROJECT_ID: ${{ secrets.ALLURE_PROJECT_ID }}
           ALLURE_JOB_RUN_ID: ${{ github.event.inputs.ALLURE_JOB_RUN_ID }}
-
