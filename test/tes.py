@@ -4,7 +4,7 @@ import allure
 @allure.label("issue", "N2-1")
 @allure.label("issue", "N2-2")
 @allure.epic("Web interface")
-@allure.issue("N2-1")
+@allure.issue("N2-2")
 def test_sample():
     allure.dynamic.issue("AUTH-123")
     pass
