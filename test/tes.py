@@ -4,6 +4,7 @@ import allure
 @allure.label("issue", "N2-1")
 @allure.label("issue", "N2-2")
 @allure.label("issue", "N2-3")
+@allure.label("issue", "N2-4")
 @allure.epic("Web interface")
 @allure.epic("Web interface2")
 @allure.issue("N2-2")
