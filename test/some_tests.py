@@ -1,6 +1,6 @@
 import allure
 # TODO replace test case link to TestOps
-
+@allure.label("issue", "N2-2")
 @allure.label("issue", "N2-1")
 @allure.epic("Web interface")
 @allure.issue("N2-1")
